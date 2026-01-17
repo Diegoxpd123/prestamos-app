@@ -1,0 +1,250 @@
+<div class="dashboard-page">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <div class="logo-icon">💼</div>
+        <h2 class="sidebar-logo text-gradient">PréstamosRápido</h2>
+      </div>
+      <button (click)="toggleSidebar()" class="sidebar-close">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        Dashboard
+      </a>
+      <a (click)="goToSimulator()" class="nav-item">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        Simular Préstamo
+      </a>
+      <div class="nav-spacer"></div>
+      <div class="user-profile">
+        <div class="user-avatar">
+          {{ (currentUser?.nombre?.[0] || 'U') }}{{ (currentUser?.apellido?.[0] || '') }}
+        </div>
+        <div class="user-info">
+          <div class="user-name">{{ currentUser?.nombre }} {{ currentUser?.apellido }}</div>
+          <div class="user-email">{{ currentUser?.email }}</div>
+        </div>
+      </div>
+      <button (click)="logout()" class="nav-item logout">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Cerrar Sesión
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-left">
+        <button (click)="toggleSidebar()" class="menu-button">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div class="header-greeting">
+          <h1 class="dashboard-title">¡Hola, {{ currentUser?.nombre }}! 👋</h1>
+          <p class="dashboard-subtitle">Bienvenido a tu panel de préstamos</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button (click)="goToSimulator()" class="btn-primary-action">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Solicitar Préstamo
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="dashboard-content">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="spinner-large"></div>
+        <p>Cargando información...</p>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div *ngIf="!isLoading">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card modern">
+            <div class="stat-icon-wrapper primary">
+              <div class="stat-icon">💰</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Préstamos Totales</div>
+              <div class="stat-value">{{ loans.length }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card modern">
+            <div class="stat-icon-wrapper success">
+              <div class="stat-icon">✅</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Préstamos Activos</div>
+              <div class="stat-value">{{ activeLoansCount }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card modern" *ngIf="activeLoan">
+            <div class="stat-icon-wrapper warning">
+              <div class="stat-icon">📅</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Próximo Pago</div>
+              <div class="stat-value">{{ formatCurrency(activeLoan.cuotaMensual) }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card modern" *ngIf="activeLoan">
+            <div class="stat-icon-wrapper info">
+              <div class="stat-icon">💵</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Saldo Pendiente</div>
+              <div class="stat-value">{{ formatCurrency(activeLoan.saldoPendiente) }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Loan Card -->
+        <div class="active-loan-section" *ngIf="activeLoan">
+          <div class="section-header-modern">
+            <h2 class="section-title">📊 Préstamo Activo</h2>
+            <span class="badge-modern" [class]="getStatusBadgeClass(activeLoan.estado)">
+              {{ getStatusLabel(activeLoan.estado) }}
+            </span>
+          </div>
+          <div class="loan-card-modern active">
+            <div class="loan-header-modern">
+              <div class="loan-icon-wrapper">
+                <div class="loan-icon">💳</div>
+              </div>
+              <div class="loan-info-main">
+                <h3 class="loan-title-modern">Préstamo #{{ activeLoan.id }}</h3>
+                <p class="loan-subtitle">Fecha de inicio: {{ formatDate(activeLoan.fechaInicio) }}</p>
+              </div>
+            </div>
+            
+            <div class="loan-details-grid">
+              <div class="detail-card">
+                <div class="detail-icon">💵</div>
+                <div class="detail-content">
+                  <span class="detail-label">Monto Original</span>
+                  <span class="detail-value-large">{{ formatCurrency(activeLoan.monto) }}</span>
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-icon">📅</div>
+                <div class="detail-content">
+                  <span class="detail-label">Cuota Mensual</span>
+                  <span class="detail-value-large primary">{{ formatCurrency(activeLoan.cuotaMensual) }}</span>
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-icon">⏱️</div>
+                <div class="detail-content">
+                  <span class="detail-label">Plazo</span>
+                  <span class="detail-value-large">{{ activeLoan.plazo }} meses</span>
+                </div>
+              </div>
+              <div class="detail-card">
+                <div class="detail-icon">📊</div>
+                <div class="detail-content">
+                  <span class="detail-label">Saldo Pendiente</span>
+                  <span class="detail-value-large warning">{{ formatCurrency(activeLoan.saldoPendiente) }}</span>
+                </div>
+              </div>
+              <div class="detail-card" *ngIf="activeLoan.proximaCuota">
+                <div class="detail-icon">⏰</div>
+                <div class="detail-content">
+                  <span class="detail-label">Próximo Pago</span>
+                  <span class="detail-value-large success">{{ formatDate(activeLoan.proximaCuota.fechaVencimiento) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- All Loans Section -->
+        <div class="loans-section">
+          <div class="section-header-modern">
+            <h2 class="section-title">📋 Todos mis Préstamos</h2>
+            <button (click)="goToSimulator()" class="btn-icon-text" *ngIf="loans.length > 0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              Nuevo Préstamo
+            </button>
+          </div>
+          
+          <div *ngIf="loans.length === 0" class="empty-state-modern">
+            <div class="empty-icon-wrapper">
+              <div class="empty-icon">📋</div>
+            </div>
+            <h3 class="empty-title">No tienes préstamos aún</h3>
+            <p class="empty-description">Simula tu primer préstamo y comienza tu solicitud en minutos</p>
+            <button (click)="goToSimulator()" class="btn-empty-action">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+              </svg>
+              Simular Préstamo
+            </button>
+          </div>
+
+          <div *ngIf="loans.length > 0" class="loans-grid-modern">
+            <div *ngFor="let loan of loans" class="loan-card-modern">
+              <div class="loan-header-modern">
+                <div class="loan-info-main">
+                  <h3 class="loan-title-modern">Préstamo #{{ loan.id }}</h3>
+                  <p class="loan-subtitle">Solicitado el {{ formatDate(loan.fechaSolicitud) }}</p>
+                </div>
+                <span class="badge-modern" [class]="getStatusBadgeClass(loan.estado)">
+                  {{ getStatusLabel(loan.estado) }}
+                </span>
+              </div>
+              
+              <div class="loan-details-grid">
+                <div class="detail-item-modern">
+                  <span class="detail-label">Monto</span>
+                  <span class="detail-value">{{ formatCurrency(loan.monto) }}</span>
+                </div>
+                <div class="detail-item-modern">
+                  <span class="detail-label">Cuota Mensual</span>
+                  <span class="detail-value">{{ formatCurrency(loan.cuotaMensual) }}</span>
+                </div>
+                <div class="detail-item-modern">
+                  <span class="detail-label">Plazo</span>
+                  <span class="detail-value">{{ loan.plazo }} meses</span>
+                </div>
+                <div class="detail-item-modern">
+                  <span class="detail-label">Estado</span>
+                  <span class="detail-value">{{ getStatusLabel(loan.estado) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-whatsapp-button></app-whatsapp-button>
+</div>

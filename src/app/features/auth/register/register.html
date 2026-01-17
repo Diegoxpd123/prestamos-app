@@ -1,0 +1,162 @@
+<div class="register-page">
+  <div class="register-container">
+    <div class="register-card">
+      <div class="register-header">
+        <button (click)="router.navigate(['/'])" class="back-button">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <h1 class="register-title">Crear Cuenta</h1>
+        <p class="register-subtitle">Únete a nosotros hoy</p>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <!-- Nombre and Apellido Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input
+              type="text"
+              id="nombre"
+              formControlName="nombre"
+              class="form-input"
+              [class.error]="nombre?.invalid && nombre?.touched"
+              placeholder="Juan">
+            <span class="error-message" *ngIf="nombre?.invalid && nombre?.touched">
+              El nombre es requerido
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="apellido" class="form-label">Apellido</label>
+            <input
+              type="text"
+              id="apellido"
+              formControlName="apellido"
+              class="form-input"
+              [class.error]="apellido?.invalid && apellido?.touched"
+              placeholder="Pérez">
+            <span class="error-message" *ngIf="apellido?.invalid && apellido?.touched">
+              El apellido es requerido
+            </span>
+          </div>
+        </div>
+
+        <!-- DNI and Teléfono Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="dni" class="form-label">DNI</label>
+            <input
+              type="text"
+              id="dni"
+              formControlName="dni"
+              class="form-input"
+              [class.error]="dni?.invalid && dni?.touched"
+              placeholder="12345678"
+              maxlength="8">
+            <span class="error-message" *ngIf="dni?.invalid && dni?.touched">
+              <span *ngIf="dni?.errors?.['required']">El DNI es requerido</span>
+              <span *ngIf="dni?.errors?.['pattern']">Debe tener 8 dígitos</span>
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="telefono" class="form-label">Teléfono</label>
+            <input
+              type="text"
+              id="telefono"
+              formControlName="telefono"
+              class="form-input"
+              [class.error]="telefono?.invalid && telefono?.touched"
+              placeholder="928080340"
+              maxlength="9">
+            <span class="error-message" *ngIf="telefono?.invalid && telefono?.touched">
+              <span *ngIf="telefono?.errors?.['required']">El teléfono es requerido</span>
+              <span *ngIf="telefono?.errors?.['pattern']">Debe tener 9 dígitos</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="email" class="form-label">Email</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-input"
+            [class.error]="email?.invalid && email?.touched"
+            placeholder="tu@email.com">
+          <span class="error-message" *ngIf="email?.invalid && email?.touched">
+            <span *ngIf="email?.errors?.['required']">El email es requerido</span>
+            <span *ngIf="email?.errors?.['email']">Email inválido</span>
+          </span>
+        </div>
+
+        <!-- Password Fields -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="password" class="form-label">Contraseña</label>
+            <input
+              type="password"
+              id="password"
+              formControlName="password"
+              class="form-input"
+              [class.error]="password?.invalid && password?.touched"
+              placeholder="••••••••">
+            <span class="error-message" *ngIf="password?.invalid && password?.touched">
+              <span *ngIf="password?.errors?.['required']">La contraseña es requerida</span>
+              <span *ngIf="password?.errors?.['minlength']">Mínimo 6 caracteres</span>
+            </span>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirmar Contraseña</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              class="form-input"
+              [class.error]="(confirmPassword?.invalid || passwordMismatch) && confirmPassword?.touched"
+              placeholder="••••••••">
+            <span class="error-message" *ngIf="(confirmPassword?.invalid || passwordMismatch) && confirmPassword?.touched">
+              <span *ngIf="confirmPassword?.errors?.['required']">Confirma tu contraseña</span>
+              <span *ngIf="passwordMismatch">Las contraseñas no coinciden</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-alert" *ngIf="errorMessage">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+          </svg>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="isLoading || registerForm.invalid">
+          <span *ngIf="!isLoading">Crear Cuenta</span>
+          <span *ngIf="isLoading" class="loading">
+            <span class="spinner"></span>
+            Creando cuenta...
+          </span>
+        </button>
+
+        <!-- Login Link -->
+        <div class="form-footer">
+          <p class="footer-text">
+            ¿Ya tienes cuenta?
+            <a routerLink="/login" class="footer-link">Inicia sesión aquí</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <app-whatsapp-button></app-whatsapp-button>
+</div>

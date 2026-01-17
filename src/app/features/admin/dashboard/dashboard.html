@@ -1,0 +1,180 @@
+<div class="admin-dashboard-page">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.open]="sidebarOpen">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <div class="logo-icon">⚡</div>
+        <h2 class="sidebar-logo">Admin Panel</h2>
+      </div>
+      <button (click)="toggleSidebar()" class="sidebar-close">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" class="nav-item">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Dashboard
+      </a>
+      <a (click)="refreshData()" class="nav-item">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Actualizar Datos
+      </a>
+      <div class="nav-divider"></div>
+      <div class="user-profile">
+        <div class="user-avatar">👤</div>
+        <div class="user-info">
+          <div class="user-name">{{ currentAdmin?.username }}</div>
+          <div class="user-role">Administrador</div>
+        </div>
+      </div>
+      <button (click)="logout()" class="nav-item logout">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+        </svg>
+        Cerrar Sesión
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-left">
+        <button (click)="toggleSidebar()" class="menu-button">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+        <div class="header-greeting">
+          <h1 class="dashboard-title">Panel de Administración</h1>
+          <p class="dashboard-subtitle">Gestiona tus clientes y préstamos</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button (click)="refreshData()" class="btn-refresh">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Actualizar
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <div class="dashboard-content">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="spinner-large"></div>
+        <p>Cargando datos...</p>
+      </div>
+
+      <!-- Dashboard Content -->
+      <div *ngIf="!isLoading">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card admin">
+            <div class="stat-icon-wrapper total">
+              <div class="stat-icon">👥</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Total Clientes</div>
+              <div class="stat-value">{{ statistics.totalClientes }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card admin">
+            <div class="stat-icon-wrapper active">
+              <div class="stat-icon">✅</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Clientes Activos</div>
+              <div class="stat-value">{{ statistics.clientesActivos }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card admin">
+            <div class="stat-icon-wrapper inactive">
+              <div class="stat-icon">⏸️</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Clientes Inactivos</div>
+              <div class="stat-value">{{ statistics.clientesInactivos }}</div>
+            </div>
+          </div>
+
+          <div class="stat-card admin">
+            <div class="stat-icon-wrapper new">
+              <div class="stat-icon">🆕</div>
+            </div>
+            <div class="stat-info">
+              <div class="stat-label">Nuevos Hoy</div>
+              <div class="stat-value">{{ statistics.clientesNuevosHoy }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clients Table -->
+        <div class="clients-section">
+          <div class="section-header-modern">
+            <h2 class="section-title">📋 Lista de Clientes</h2>
+            <button (click)="refreshData()" class="btn-icon-text">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+              Actualizar
+            </button>
+          </div>
+
+          <div *ngIf="clients.length === 0" class="empty-state-modern">
+            <div class="empty-icon-wrapper">
+              <div class="empty-icon">👥</div>
+            </div>
+            <h3 class="empty-title">No hay clientes registrados</h3>
+            <p class="empty-description">Los clientes aparecerán aquí cuando se registren</p>
+          </div>
+
+          <div *ngIf="clients.length > 0" class="table-container">
+            <table class="clients-table">
+              <thead>
+                <tr>
+                  <th>Fecha Registro</th>
+                  <th>Nombre</th>
+                  <th>Email</th>
+                  <th>DNI</th>
+                  <th>Teléfono</th>
+                  <th>Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let client of clients">
+                  <td>{{ formatDate(client.fechaRegistro) }}</td>
+                  <td>{{ client.nombre }} {{ client.apellido }}</td>
+                  <td>{{ client.email }}</td>
+                  <td>{{ client.dni }}</td>
+                  <td>{{ client.telefono }}</td>
+                  <td>
+                    <span class="badge-modern" [class.badge-success]="client.estado === 'Activo'" 
+                          [class.badge-warning]="client.estado === 'Inactivo'">
+                      {{ client.estado }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-whatsapp-button></app-whatsapp-button>
+</div>

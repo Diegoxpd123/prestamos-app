@@ -1,0 +1,247 @@
+<div class="simulator-page">
+  <!-- Header -->
+  <header class="simulator-header">
+    <div class="container mx-auto px-4">
+      <div class="header-content">
+        <button (click)="router.navigate(['/'])" class="back-button">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          Volver
+        </button>
+        <h1 class="page-title">Simulador de Préstamos</h1>
+        <p class="page-subtitle">Calcula cuánto pagarías y encuentra el plan perfecto para ti</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="simulator-layout">
+      <!-- Controls Section -->
+      <div class="controls-section">
+        <div class="control-card">
+          <div class="control-header">
+            <label class="control-label">Monto del Préstamo</label>
+            <div class="amount-display">{{ formatCurrency(monto()) }}</div>
+          </div>
+          
+          <!-- Amount Slider -->
+          <div class="slider-container">
+            <input 
+              type="range" 
+              [min]="availableAmounts[0]" 
+              [max]="availableAmounts[availableAmounts.length - 1]"
+              [value]="monto()"
+              (input)="onMontoChange(+$any($event.target).value)"
+              class="slider">
+            <div class="slider-labels">
+              <span>{{ formatCurrency(availableAmounts[0]) }}</span>
+              <span>{{ formatCurrency(availableAmounts[availableAmounts.length - 1]) }}</span>
+            </div>
+          </div>
+
+          <!-- Quick Amount Buttons -->
+          <div class="quick-buttons">
+            <button 
+              *ngFor="let amount of [5000, 10000, 20000, 30000]" 
+              (click)="onMontoChange(amount)"
+              [class.active]="monto() === amount"
+              class="quick-btn">
+              {{ formatCurrency(amount) }}
+            </button>
+          </div>
+        </div>
+
+        <div class="control-card">
+          <div class="control-header">
+            <label class="control-label">Plazo de Pago</label>
+            <div class="term-display">{{ plazo() }} meses</div>
+          </div>
+          
+          <!-- Term Slider -->
+          <div class="slider-container">
+            <input 
+              type="range" 
+              [min]="availableTerms[0]" 
+              [max]="availableTerms[availableTerms.length - 1]"
+              [step]="3"
+              [value]="plazo()"
+              (input)="onPlazoChange(+$any($event.target).value)"
+              class="slider">
+            <div class="slider-labels">
+              <span>{{ availableTerms[0] }} meses</span>
+              <span>{{ availableTerms[availableTerms.length - 1] }} meses</span>
+            </div>
+          </div>
+
+          <!-- Quick Term Buttons -->
+          <div class="quick-buttons">
+            <button 
+              *ngFor="let term of [6, 12, 18, 24, 36]" 
+              (click)="onPlazoChange(term)"
+              [class.active]="plazo() === term"
+              class="quick-btn">
+              {{ term }} meses
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Section -->
+      <div class="results-section" *ngIf="simulation()">
+        <div class="results-header">
+          <h2 class="results-title">Resumen de tu Préstamo</h2>
+          <p class="results-subtitle">Basado en tu selección</p>
+        </div>
+
+        <div class="results-grid">
+          <!-- Monthly Payment Card -->
+          <div class="result-card primary">
+            <div class="result-icon">📅</div>
+            <div class="result-label">Cuota Mensual</div>
+            <div class="result-value">{{ formatCurrency(simulation()!.cuotaMensual) }}</div>
+            <div class="result-note">Pago mensual fijo</div>
+          </div>
+
+          <!-- Total Amount Card -->
+          <div class="result-card">
+            <div class="result-icon">💰</div>
+            <div class="result-label">Total a Pagar</div>
+            <div class="result-value">{{ formatCurrency(simulation()!.totalPagar) }}</div>
+            <div class="result-note">Monto total incluye intereses</div>
+          </div>
+
+          <!-- Interest Rate Card -->
+          <div class="result-card">
+            <div class="result-icon">📊</div>
+            <div class="result-label">Tasa de Interés</div>
+            <div class="result-value">{{ simulation()!.tasaInteres }}%</div>
+            <div class="result-note">Tasa anual efectiva</div>
+          </div>
+
+          <!-- Total Interest Card -->
+          <div class="result-card">
+            <div class="result-icon">💸</div>
+            <div class="result-label">Total de Intereses</div>
+            <div class="result-value">{{ formatCurrency(simulation()!.totalIntereses) }}</div>
+            <div class="result-note">Intereses a pagar</div>
+          </div>
+        </div>
+
+        <!-- Chart Visualization -->
+        <div class="chart-container">
+          <div class="chart-card">
+            <h3 class="chart-title">Distribución del Pago Total</h3>
+            <div class="chart-wrapper">
+              <!-- Bar Chart -->
+              <div class="bar-chart-container">
+                <div class="bar-item">
+                  <div class="bar-label-row">
+                    <div class="bar-label-info">
+                      <div class="bar-color-indicator capital"></div>
+                      <span class="bar-label-text">Capital</span>
+                    </div>
+                    <span class="bar-value">{{ formatCurrency(simulation()!.monto) }}</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill capital" 
+                         [style.width.%]="(simulation()!.monto / simulation()!.totalPagar) * 100"
+                         [attr.aria-label]="'Capital: ' + formatCurrency(simulation()!.monto)">
+                      <span class="bar-percentage">{{ ((simulation()!.monto / simulation()!.totalPagar) * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="bar-item">
+                  <div class="bar-label-row">
+                    <div class="bar-label-info">
+                      <div class="bar-color-indicator interest"></div>
+                      <span class="bar-label-text">Intereses</span>
+                    </div>
+                    <span class="bar-value">{{ formatCurrency(simulation()!.totalIntereses) }}</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill interest" 
+                         [style.width.%]="(simulation()!.totalIntereses / simulation()!.totalPagar) * 100"
+                         [attr.aria-label]="'Intereses: ' + formatCurrency(simulation()!.totalIntereses)">
+                      <span class="bar-percentage">{{ ((simulation()!.totalIntereses / simulation()!.totalPagar) * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Total Summary -->
+              <div class="chart-summary">
+                <div class="summary-row">
+                  <span class="summary-label">Total a Pagar:</span>
+                  <span class="summary-value">{{ formatCurrency(simulation()!.totalPagar) }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amortization Table Toggle -->
+        <div class="table-toggle">
+          <button (click)="toggleAmortizationTable()" class="toggle-btn">
+            {{ showAmortizationTable() ? 'Ocultar' : 'Mostrar' }} Tabla de Amortización
+            <svg [class.rotated]="showAmortizationTable()" class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Amortization Table -->
+        <div class="amortization-table-container" *ngIf="showAmortizationTable()">
+          <div class="table-card">
+            <h3 class="table-title">Tabla de Amortización</h3>
+            <div class="table-wrapper">
+              <table class="amortization-table">
+                <thead>
+                  <tr>
+                    <th>Cuota</th>
+                    <th>Saldo Inicial</th>
+                    <th>Cuota</th>
+                    <th>Capital</th>
+                    <th>Interés</th>
+                    <th>Saldo Final</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of simulation()!.tablaAmortizacion | slice:0:12; let i = index">
+                    <td>{{ item.numero }}</td>
+                    <td>{{ formatCurrency(item.saldoInicial) }}</td>
+                    <td>{{ formatCurrency(item.cuota) }}</td>
+                    <td>{{ formatCurrency(item.capital) }}</td>
+                    <td>{{ formatCurrency(item.interes) }}</td>
+                    <td>{{ formatCurrency(item.saldoFinal) }}</td>
+                  </tr>
+                  <tr *ngIf="simulation()!.tablaAmortizacion.length > 12" class="more-rows">
+                    <td colspan="6" class="text-center">
+                      ... y {{ simulation()!.tablaAmortizacion.length - 12 }} cuotas más
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="cta-buttons">
+          <button (click)="goToRequestLoan()" class="btn-primary-large">
+            Solicitar este Préstamo
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </button>
+          <button (click)="goToLogin()" class="btn-secondary-large">
+            Guardar Simulación
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-whatsapp-button></app-whatsapp-button>
+</div>

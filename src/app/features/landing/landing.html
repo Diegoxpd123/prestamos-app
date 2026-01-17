@@ -1,0 +1,195 @@
+<div class="landing-page">
+  <!-- Navigation -->
+  <nav class="navbar glass animate-fade-in">
+    <div class="container mx-auto px-4">
+      <div class="flex items-center justify-between py-4">
+        <div class="logo">
+          <span class="text-gradient text-2xl font-bold">PréstamosRápido</span>
+        </div>
+        <div class="nav-links hidden md:flex gap-6">
+          <a (click)="scrollTo('features')" class="nav-link">Características</a>
+          <a (click)="scrollTo('how-it-works')" class="nav-link">Cómo Funciona</a>
+          <a (click)="scrollTo('faq')" class="nav-link">Preguntas Frecuentes</a>
+        </div>
+        <div class="nav-actions flex gap-4">
+          <button (click)="goToLogin()" class="btn-text">Iniciar Sesión</button>
+          <button (click)="goToSimulator()" class="btn-primary">Simular Préstamo</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-background"></div>
+    <div class="container mx-auto px-4 relative z-10">
+      <div class="hero-content animate-fade-in">
+        <h1 class="hero-title">
+          Tu Préstamo Personal
+          <span class="text-gradient">en Minutos</span>
+        </h1>
+        <p class="hero-subtitle">
+          Obtén hasta S/. 50,000 sin papeleos. Aprobación rápida, tasas competitivas y proceso 100% digital.
+        </p>
+        <div class="hero-actions">
+          <button (click)="goToSimulator()" class="btn-hero-primary">
+            Simular mi Préstamo
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            </svg>
+          </button>
+          <button (click)="goToLogin()" class="btn-hero-secondary">
+            Ya tengo cuenta
+          </button>
+        </div>
+        
+        <!-- Stats -->
+        <div class="hero-stats">
+          <div *ngFor="let stat of stats" class="stat-card">
+            <div class="stat-icon">{{ stat.icon }}</div>
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features-section">
+    <div class="container mx-auto px-4 py-20">
+      <div class="section-header">
+        <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <p class="section-subtitle">Ofrecemos la mejor experiencia en préstamos personales</p>
+      </div>
+      <div class="features-grid">
+        <div *ngFor="let feature of features; let i = index" 
+             class="feature-card animate-fade-in"
+             [style.animation-delay]="(i * 0.1) + 's'">
+          <div class="feature-icon">{{ feature.icon }}</div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works-section">
+    <div class="container mx-auto px-4 py-20">
+      <div class="section-header">
+        <h2 class="section-title">Cómo Funciona</h2>
+        <p class="section-subtitle">Obtén tu préstamo en 3 sencillos pasos</p>
+      </div>
+      <div class="steps-container">
+        <div *ngFor="let step of steps" class="step-card">
+          <div class="step-number">{{ step.number }}</div>
+          <h3 class="step-title">{{ step.title }}</h3>
+          <p class="step-description">{{ step.description }}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section class="testimonials-section">
+    <div class="container mx-auto px-4 py-20">
+      <div class="section-header">
+        <h2 class="section-title">Lo que dicen nuestros clientes</h2>
+        <p class="section-subtitle">Miles de personas confían en nosotros</p>
+      </div>
+      <div class="testimonials-grid">
+        <div *ngFor="let testimonial of testimonials" class="testimonial-card">
+          <div class="testimonial-header">
+            <div class="testimonial-avatar">{{ testimonial.image }}</div>
+            <div class="testimonial-info">
+              <h4 class="testimonial-name">{{ testimonial.name }}</h4>
+              <p class="testimonial-role">{{ testimonial.role }}</p>
+            </div>
+          </div>
+          <div class="testimonial-rating">
+            <span *ngFor="let star of [1,2,3,4,5]" class="star">★</span>
+          </div>
+          <p class="testimonial-comment">"{{ testimonial.comment }}"</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="faq-section">
+    <div class="container mx-auto px-4 py-20">
+      <div class="section-header">
+        <h2 class="section-title">Preguntas Frecuentes</h2>
+        <p class="section-subtitle">Resolvemos tus dudas</p>
+      </div>
+      <div class="faq-container">
+        <div *ngFor="let faq of faqs; let i = index" 
+             class="faq-item"
+             (click)="toggleFaq(i)">
+          <div class="faq-question">
+            <span>{{ faq.question }}</span>
+            <svg class="faq-icon" [class.open]="faq.isOpen" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </div>
+          <div class="faq-answer" [class.open]="faq.isOpen">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container mx-auto px-4 py-20">
+      <div class="cta-content">
+        <h2 class="cta-title">¿Listo para obtener tu préstamo?</h2>
+        <p class="cta-subtitle">Simula tu préstamo ahora y obtén una respuesta instantánea</p>
+        <button (click)="goToSimulator()" class="btn-cta">
+          Simular mi Préstamo Gratis
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container mx-auto px-4 py-12">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">PréstamosRápido</h3>
+          <p class="footer-text">Tu socio financiero de confianza para todos tus proyectos.</p>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-heading">Enlaces</h4>
+          <ul class="footer-links">
+            <li><a routerLink="/simulador">Simular Préstamo</a></li>
+            <li><a routerLink="/login">Iniciar Sesión</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-heading">Contacto</h4>
+          <ul class="footer-links">
+            <li>WhatsApp: +51 928080340</li>
+            <li>Email: contacto@prestamosrapido.com</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-heading">Legal</h4>
+          <ul class="footer-links">
+            <li><a href="#">Términos y Condiciones</a></li>
+            <li><a href="#">Política de Privacidad</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 PréstamosRápido. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- WhatsApp Button -->
+  <app-whatsapp-button></app-whatsapp-button>
+</div>

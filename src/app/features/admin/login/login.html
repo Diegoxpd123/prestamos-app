@@ -1,0 +1,76 @@
+<div class="admin-login-page">
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <button (click)="router.navigate(['/'])" class="back-button">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <div class="admin-icon">🔐</div>
+        <h1 class="login-title">Acceso Administrador</h1>
+        <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <!-- Username Field -->
+        <div class="form-group">
+          <label for="username" class="form-label">Usuario</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="form-input"
+            [class.error]="username?.invalid && username?.touched"
+            placeholder="Ingresa tu usuario">
+          <span class="error-message" *ngIf="username?.invalid && username?.touched">
+            El usuario es requerido
+          </span>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            type="password"
+            id="password"
+            formControlName="password"
+            class="form-input"
+            [class.error]="password?.invalid && password?.touched"
+            placeholder="Ingresa tu contraseña">
+          <span class="error-message" *ngIf="password?.invalid && password?.touched">
+            La contraseña es requerida
+          </span>
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-alert" *ngIf="errorMessage">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+          </svg>
+          {{ errorMessage }}
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="isLoading || loginForm.invalid">
+          <span *ngIf="!isLoading">Iniciar Sesión</span>
+          <span *ngIf="isLoading" class="loading">
+            <span class="spinner"></span>
+            Validando credenciales...
+          </span>
+        </button>
+
+        <!-- Link to user login -->
+        <div class="form-footer">
+          <p class="footer-text">
+            ¿Eres cliente?
+            <a routerLink="/login" class="footer-link">Inicia sesión aquí</a>
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
