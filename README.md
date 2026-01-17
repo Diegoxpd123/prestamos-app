@@ -45,7 +45,8 @@ Sistema moderno de gestión de préstamos desarrollado con Angular 20, integrado
    ```
 
 3. **Configurar Google Sheets**
-   - Configura las credenciales OAuth2 en `src/app/core/services/google-sheets.service.ts`
+   - Crea un archivo `.env` en la raíz con tus credenciales (ver `DEPLOY.md`)
+   - O configura las variables de entorno en Vercel para producción
    - Asegúrate de tener las hojas "Clientes" y "Administradores" configuradas
 
 4. **Iniciar servidor de desarrollo**
