@@ -2,19 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, from, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { AppConfig } from '../config/app.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GoogleSheetsService {
-  private readonly SHEET_ID = '1G7UAwd7kwyZQWtHObVFMBNcjUIHl1bq5nh6WV0kIf2s';
+  private readonly SHEET_ID = AppConfig.googleSheets.sheetId;
   private readonly SHEET_NAME = 'Clientes';
   
-  // Credenciales OAuth2 (mismas que ejemplo.js)
+  // Credenciales OAuth2 desde configuración
   private readonly OAUTH_CONFIG = {
-    client_id: '282610843895-mb2kbsj7qogtpo9c0a3a8c2j8i5r2l7t.apps.googleusercontent.com',
-    client_secret: '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',
-    refresh_token: '1//04AfeqHc5DcxCCgYIARAAGAQSNgF-L9Ir9sPACIqH34u-2YJAqYKsSnv2fxJFqkbwlPkvqDYOgN1v4CN0dNKuZjmr78lbz6Lqxw'
+    client_id: AppConfig.googleSheets.clientId,
+    client_secret: AppConfig.googleSheets.clientSecret,
+    refresh_token: AppConfig.googleSheets.refreshToken
   };
 
   private accessToken: string | null = null;
